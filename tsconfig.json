@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "jsx": "preserve",
+    "noImplicitAny": false,
+    "allowJs": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "@izhaki/use-size": ["src/useSize"],
+      "@izhaki/use-size/*": ["src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "demo", "dist"]
+}

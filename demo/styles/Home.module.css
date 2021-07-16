@@ -1,0 +1,16 @@
+.container {
+  min-height: 100vh;
+  height: 100vh;
+}
+
+@media (max-width: 600px) {
+  .grid {
+    width: 100%;
+    flex-direction: column;
+  }
+}
+
+.size-once-example {
+  background-color: #eee;
+  padding: 1em;
+}
