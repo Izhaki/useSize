@@ -98,6 +98,12 @@ async function generateTypes() {
   await exe('tsc --project tsconfig.build.json --outDir dist/__types__');
 }
 
+async function copyToDist(filePath) {
+  const distPath = path.join('dist', filePath);
+  await fs.copy(filePath, distPath);
+  console.log(`Copied ${filePath} to ${distPath}`);
+}
+
 async function build() {
   await removeDist();
   await frankDist();
@@ -118,6 +124,9 @@ async function build() {
     target: 'modern',
     packagePropPaths: ['exports.default'],
   });
+
+  await copyToDist('README.md');
+  await copyToDist('LICENSE');
 }
 
 export default build;
