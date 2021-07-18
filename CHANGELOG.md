@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/Izhaki/useSize/compare/v1.0.2...v1.0.3) (2021-07-18)
+
+
+### Bug Fixes
+
+* README and LICENSE not published ([ab5c34b](https://github.com/Izhaki/useSize/commit/ab5c34b40cd120a0187629cf921bb7a17b93ce4e))
+
 ## [1.0.2](https://github.com/Izhaki/useSize/compare/v1.0.1...v1.0.2) (2021-07-17)
 
 
