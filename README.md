@@ -6,9 +6,9 @@
   </a>
 </p>
 
-A react hook to obtain DOM elements size.
+A react hook to obtain DOM elements' size.
 
-Essentially a compositional take on [react-sizeme](https://github.com/ctrlplusb/react-sizeme), without the components ([why?](#why-no-components)).
+Ultimately, a compositional take on [react-sizeme](https://github.com/ctrlplusb/react-sizeme), barring components ([why?](#why-no-components)).
 
 Features:
 
@@ -42,7 +42,7 @@ function SizeOnce() {
 
 ### With ResizeObserver
 
-Use the native ResizeObserver as resize detector.
+Use the native ResizeObserver as a resize detector.
 
 ```typescript
 import useSize from '@izhaki/use-size';
@@ -86,7 +86,7 @@ function ResizeObserverWithDebounce() {
 }
 ```
 
-> ⚠️ Prefer throttle over debounce, unless your view takes a noticeable time to render (like 15000 SVG nodes).
+> ⚠️ Prefer throttle over debounce, unless your view takes a noticeable time to render (say, 15000 SVG nodes or somesuch).
 
 ### Using ERD
 
@@ -105,14 +105,14 @@ function ErdWithThrottle() {
 
 ## Why no Components?
 
-Shipping components will add to the API surface, specifically as there are so many scenarios to cover:
+Components add to the API surface, specifically as there are rather few scenarios to cover:
 
 - Do we add an element to the DOM? Which one? How will it be styled?
 - Do we Forward Ref?
 - Do we support render props?
 - What about High Order Components?
 
-Writing all of these components with `useSize` is cheap (a few lines of code), and each component can be tailored to the specific use case at hand.
+Writing all of these components with `useSize` is cheap (a few lines of code), and each component can be tailored to specific needs.
 
 <details>
   <summary>Example of a component that adds a div to the DOM</summary>
