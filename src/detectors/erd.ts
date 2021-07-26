@@ -1,9 +1,8 @@
 import type { SizeDetector } from '../types';
 import createResizeDetector from 'element-resize-detector';
+import { noRegulator, getNotifySize } from './helpers';
 
 let detector = null;
-
-const noRegulator = (callback) => callback;
 
 function createDetector({ regulator = noRegulator } = {}):
   | SizeDetector
@@ -15,22 +14,25 @@ function createDetector({ regulator = noRegulator } = {}):
     strategy: 'scroll',
   });
 
-  detector = {
-    observe(element, onSize) {
-      const handleSize = regulator(onSize);
+  const notifySize = getNotifySize();
 
+  return {
+    observe(element, onSize) {
+      // Always notify the initial size straight away.
+      notifySize(element, onSize);
+
+      // Set up the detector
+      const regulatedOnSize = regulator(onSize);
       resizeDetector.listenTo(element, () => {
-        const { width, height } = element.getBoundingClientRect();
-        handleSize({ width, height });
+        notifySize(element, regulatedOnSize);
       });
     },
     unobserve(element) {
       resizeDetector.uninstall(element);
     },
   };
-  return detector;
 }
 
-const getDetector = (options) => detector || createDetector(options);
+const getDetector = (options = {}) => detector || createDetector(options);
 
 export default getDetector;

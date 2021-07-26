@@ -1,11 +1,11 @@
 import useSize from '@izhaki/use-size';
 import resizeObserver from '@izhaki/use-size/detectors/resizeObserver';
-import { debounce, throttle, setClock } from '@izhaki/use-size/regulators';
+import erd from '@izhaki/use-size/detectors/erd';
+import { debounce, throttle } from '@izhaki/use-size/regulators';
 import {
   render as testingLibraryRender,
   waitFor,
 } from '@testing-library/react';
-import { createClock } from '@sinonjs/fake-timers';
 
 const { expect } = chai;
 
@@ -37,8 +37,8 @@ function UseSize({ options = {}, onRender }) {
   );
 }
 
-const waitForCondition = (evaluator) =>
-  waitFor(() => expect(evaluator()).to.be.true, { timeout: 2000 });
+const waitForCondition = (predicate) =>
+  waitFor(() => expect(predicate()).to.be.true, { timeout: 2000 });
 
 async function render(reactElement) {
   const { findByTitle } = testingLibraryRender(reactElement);
@@ -72,10 +72,8 @@ describe('The useSize hook', function () {
       await callback();
       expect(renderCount).to.eql(oldRenderCount);
     };
-  });
 
-  afterEach(async function () {
-    await sleep(1500);
+    this.getRenderCount = () => renderCount;
   });
 
   describe('when initiated with no detector', function () {
@@ -112,7 +110,7 @@ describe('The useSize hook', function () {
       expect(width).to.eq(600);
     });
 
-    it('should not update when the component is resized', async function () {
+    it('should update when the component is resized', async function () {
       await this.waitForRerender(() =>
         window.setViewportSize({ width: 700, height: 700 })
       );
@@ -121,16 +119,99 @@ describe('The useSize hook', function () {
     });
   });
 
-  describe.only('when initiated with a resizeObserver detector and a throttle regulator', function () {
+  describe('when initiated with a resizeObserver detector and a throttle regulator', function () {
     beforeEach(async function () {
-      this.clock = createClock();
-
-      setClock(this.clock);
-
       this.getSize = await render(
         <UseSize
           options={{
             detector: resizeObserver({ regulator: throttle(250) }),
+          }}
+          onRender={this.onRender}
+        />
+      );
+    });
+
+
+    it('should return the correct size', async function () {
+      const { width } = await this.getSize();
+      expect(width).to.eq(600);
+    });
+
+    it('should not update when the component is resized but the throttle duration has not elapsed', async function () {
+      const initialRenderCount = this.getRenderCount();
+
+      await window.setViewportSize({ width: 800, height: 800 });
+      await sleep(100);
+
+      await window.setViewportSize({ width: 700, height: 700 });
+      await sleep(100);
+
+      expect(this.getRenderCount()).to.eq(initialRenderCount);
+    });
+
+    it('should update when the component is resized and the throttle duration has elapsed', async function () {
+      await window.setViewportSize({ width: 800, height: 800 });
+      await sleep(100);
+
+      await window.setViewportSize({ width: 700, height: 700 });
+      await sleep(200);
+
+      const { width } = await this.getSize();
+      expect(width).to.eq(700);
+    });
+  });
+
+  describe('when initiated with a resizeObserver detector and a debounce regulator', function () {
+    beforeEach(async function () {
+      this.getSize = await render(
+        <UseSize
+          options={{
+            detector: resizeObserver({ regulator: debounce(200) }),
+          }}
+          onRender={this.onRender}
+        />
+      );
+    });
+
+
+    it('should return the correct size', async function () {
+      const { width } = await this.getSize();
+      expect(width).to.eq(600);
+    });
+
+    it('should not update when the component is resized but the debounce duration has not elapsed', async function () {
+      const initialRenderCount = this.getRenderCount();
+
+      await window.setViewportSize({ width: 800, height: 800 });
+      await sleep(120);
+
+      await window.setViewportSize({ width: 700, height: 700 });
+      await sleep(120);
+
+      expect(this.getRenderCount()).to.eq(initialRenderCount);
+    });
+
+    it('should update when the component is resized and the debounce duration has elapsed', async function () {
+      await window.setViewportSize({ width: 900, height: 900 });
+      await sleep(100);
+
+      await window.setViewportSize({ width: 800, height: 800 });
+      await sleep(100);
+
+      await window.setViewportSize({ width: 700, height: 700 });
+      await sleep(250);
+
+      const { width } = await this.getSize();
+      expect(width).to.eq(700);
+    });
+  });
+
+  describe('when initiated with an erd detector but no regulator', function () {
+    beforeEach(async function () {
+      this.getSize = await render(
+        <UseSize
+          options={{
+            detector: erd(),
           }}
           onRender={this.onRender}
         />
@@ -142,32 +223,15 @@ describe('The useSize hook', function () {
       expect(width).to.eq(600);
     });
 
-    it('should not update when the component is resized but the throttle duration has not elapsed', async function () {
-      await this.expectNoRerender(() =>
+    it('should update when the component is resized', async function () {
+      await this.waitForRerender(() =>
         window.setViewportSize({ width: 700, height: 700 })
       );
-    });
-
-    it.only('should update when the component is resized and the throttle duration has elapsed', async function () {
-      await this.expectNoRerender(() =>
-        window.setViewportSize({ width: 800, height: 800 })
-      );
-
-      await this.expectNoRerender(() =>
-        window.setViewportSize({ width: 700, height: 700 })
-      );
-
-      // Setting the viewport size above will trigger the first resize event, which will call
-      // setTimer for the first time, but this may happen slightly after this point in the test
-      // so we wait to ensure setTimer was called.
-      await waitForCondition(() => this.clock.countTimers() === 1);
-
-      await this.waitForRerender(() => {
-        this.clock.tick(300);
-      });
-
       const { width } = await this.getSize();
       expect(width).to.eq(700);
     });
   });
+
+
+
 });

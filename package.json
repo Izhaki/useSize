@@ -28,7 +28,6 @@
     "@semantic-release/changelog": "^5.0.1",
     "@semantic-release/exec": "^5.0.0",
     "@semantic-release/git": "^9.0.0",
-    "@sinonjs/fake-timers": "^7.1.2",
     "@testing-library/react": "^12.0.0",
     "@types/chai": "^4.2.19",
     "@types/mocha": "^8.2.2",

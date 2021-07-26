@@ -1,23 +1,13 @@
 import type { Regulator } from './types';
 
-let clock = {
-  setTimeout: setTimeout.bind(this),
-  clearTimeout: clearTimeout.bind(this),
-};
-
-// For testing
-export function setClock(newClock) {
-  clock = newClock;
-}
-
 export const debounce: Regulator = (wait: number) => (func) => {
   let timeout;
   function debounced(...args) {
     const later = () => {
       func.apply(this, args);
     };
-    clock.clearTimeout(timeout);
-    timeout = clock.setTimeout(later, wait);
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
   }
 
   return debounced;
@@ -41,7 +31,7 @@ export const throttle: Regulator = (frameDuration: number) => (func) => {
       func.apply(this, args);
     };
     if (!timeout) {
-      timeout = clock.setTimeout(() => {
+      timeout = setTimeout(() => {
         latest();
         timeout = null;
       }, getDurationToNextFrame());

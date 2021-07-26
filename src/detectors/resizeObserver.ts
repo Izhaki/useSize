@@ -1,6 +1,5 @@
 import type { SizeDetector, SizeCallback } from '../types';
-
-const noRegulator = (callback: SizeCallback) => callback;
+import { noRegulator, getNotifySize } from './helpers';
 
 function createDetector({ regulator = noRegulator } = {}):
   | SizeDetector
@@ -12,28 +11,22 @@ function createDetector({ regulator = noRegulator } = {}):
     throw new Error('window.ResizeObserver not avail');
   }
 
-  let regulatedOnsize: SizeCallback;
+  let regulatedOnSize: SizeCallback;
 
-  const previousSize = { width: null, height: null };
-
-  function notifySize(element: Element, sizeCallback) {
-    const { width, height } = element.getBoundingClientRect();
-    if (previousSize.width !== width || previousSize.height !== height) {
-      sizeCallback({ width, height });
-      previousSize.width = width;
-      previousSize.height = height;
-    }
-  }
+  const notifySize = getNotifySize();
 
   const observer = new ResizeObserver((entries) => {
     const element = entries[0].target;
-    notifySize(element, regulatedOnsize);
+    notifySize(element, regulatedOnSize);
   });
 
   return {
     observe(element, onSize) {
+      // Always notify the initial size straight away.
       notifySize(element, onSize);
-      regulatedOnsize = regulator(onSize);
+
+      // Set up the detector
+      regulatedOnSize = regulator(onSize);
       observer.observe(element);
     },
     unobserve(element) {
