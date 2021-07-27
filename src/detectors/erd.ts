@@ -16,20 +16,20 @@ function createDetector({ regulator = noRegulator } = {}):
 
   const notifySize = getNotifySize();
 
-  return {
-    observe(element, onSize) {
-      // Always notify the initial size straight away.
-      notifySize(element, onSize);
+  return (element, onSize) => {
+    // Always notify the initial size straight away.
+    notifySize(element, onSize);
 
-      // Set up the detector
-      const regulatedOnSize = regulator(onSize);
-      resizeDetector.listenTo(element, () => {
-        notifySize(element, regulatedOnSize);
-      });
-    },
-    unobserve(element) {
+    // Set up the detector
+    const regulatedOnSize = regulator(onSize);
+    resizeDetector.listenTo(element, () => {
+      notifySize(element, regulatedOnSize);
+    });
+
+    return () => {
+      regulatedOnSize.cancel();
       resizeDetector.uninstall(element);
-    },
+    };
   };
 }
 

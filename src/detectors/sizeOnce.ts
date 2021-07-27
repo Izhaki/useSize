@@ -1,11 +1,9 @@
 import type { SizeDetector } from '../types';
 
-const sizeOnce: SizeDetector = {
-  observe(element, onSize) {
-    const { width, height } = element.getBoundingClientRect();
-    onSize({ width, height });
-  },
-  unobserve() {},
+const sizeOnce: SizeDetector = (element, onSize) => {
+  const { width, height } = element.getBoundingClientRect();
+  onSize({ width, height });
+  return () => {};
 };
 
 export default sizeOnce;

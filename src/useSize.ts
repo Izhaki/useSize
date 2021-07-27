@@ -1,6 +1,6 @@
 import * as React from 'react';
 import sizeOnce from './detectors/sizeOnce';
-import type { Size, SizeDetector } from './types';
+import type { Size, SizeDetector, Unobserve } from './types';
 
 export interface Props {
   defaultSize?: Size;
@@ -15,26 +15,20 @@ function useSize({
   size: Size;
   mounted: boolean;
 } {
-  const element = React.useRef<Element | null>(null);
+  const unobserve = React.useRef<Unobserve | null>(null);
   const [size, setSize] = React.useState(defaultSize);
 
   const ref = React.useCallback((node) => {
     if (node !== null) {
-      element.current = node;
-      detector.observe(node, setSize);
-    } else if (element.current !== null) {
-      detector.unobserve(element.current);
-      element.current = null;
-      setSize(defaultSize);
+      unobserve.current = detector(node, setSize);
     } else {
-      // We should never get here.
-      throw new Error(
-        'A callbackRef received null as a node (unmount), but no current element (from mount)'
-      );
+      unobserve.current();
+      unobserve.current = null;
+      setSize(defaultSize);
     }
   }, []);
 
-  const mounted = element !== null;
+  const mounted = unobserve.current !== null;
   return { ref, size, mounted };
 }
 

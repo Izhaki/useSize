@@ -1,6 +1,10 @@
-import type { SizeCallback } from '../types';
+import type { SizeCallback, CancellableSizeCallback } from '../types';
 
-export const noRegulator = (callback: SizeCallback) => callback;
+export function noRegulator(callback: SizeCallback): CancellableSizeCallback {
+  const identityFunction = (size) => callback(size);
+  identityFunction.cancel = () => {};
+  return identityFunction;
+}
 
 export function getNotifySize() {
   const previousSize = { width: null, height: null };

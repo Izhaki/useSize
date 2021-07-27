@@ -1,4 +1,4 @@
-import type { SizeDetector, SizeCallback } from '../types';
+import type { SizeDetector, CancellableSizeCallback } from '../types';
 import { noRegulator, getNotifySize } from './helpers';
 
 function createDetector({ regulator = noRegulator } = {}):
@@ -11,7 +11,7 @@ function createDetector({ regulator = noRegulator } = {}):
     throw new Error('window.ResizeObserver not avail');
   }
 
-  let regulatedOnSize: SizeCallback;
+  let regulatedOnSize: CancellableSizeCallback;
 
   const notifySize = getNotifySize();
 
@@ -20,18 +20,18 @@ function createDetector({ regulator = noRegulator } = {}):
     notifySize(element, regulatedOnSize);
   });
 
-  return {
-    observe(element, onSize) {
-      // Always notify the initial size straight away.
-      notifySize(element, onSize);
+  return (element, onSize) => {
+    // Always notify the initial size straight away.
+    notifySize(element, onSize);
 
-      // Set up the detector
-      regulatedOnSize = regulator(onSize);
-      observer.observe(element);
-    },
-    unobserve(element) {
+    // Set up the detector
+    regulatedOnSize = regulator(onSize);
+    observer.observe(element);
+
+    return () => {
+      regulatedOnSize.cancel();
       observer.unobserve(element);
-    },
+    };
   };
 }
 

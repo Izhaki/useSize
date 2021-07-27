@@ -5,11 +5,19 @@ export interface Size {
 
 export type SizeCallback = (size: Size) => void;
 
-export interface SizeDetector {
-  observe: (element: Element, onSize: SizeCallback) => void;
-  unobserve: (element: Element) => void;
-}
+type Cancellable = {
+  cancel: () => void;
+};
+
+export type CancellableSizeCallback = SizeCallback & Cancellable;
+
+export type Unobserve = () => void;
+
+export type SizeDetector = (
+  element: Element,
+  onSize: SizeCallback
+) => Unobserve;
 
 export type Regulator = (
   delay: number
-) => (callback: SizeCallback) => SizeCallback;
+) => (callback: SizeCallback) => CancellableSizeCallback;

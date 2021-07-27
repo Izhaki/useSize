@@ -10,6 +10,12 @@ export const debounce: Regulator = (wait: number) => (func) => {
     timeout = setTimeout(later, wait);
   }
 
+  debounced.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+  };
+
   return debounced;
 };
 
@@ -37,6 +43,12 @@ export const throttle: Regulator = (frameDuration: number) => (func) => {
       }, getDurationToNextFrame());
     }
   }
+
+  throttled.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+  };
 
   return throttled;
 };
