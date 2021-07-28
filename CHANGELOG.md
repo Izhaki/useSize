@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/Izhaki/useSize/compare/v1.0.3...v1.0.4) (2021-07-28)
+
+
+### Bug Fixes
+
+* Timeouts are not cleared upon unmount ([d85caea](https://github.com/Izhaki/useSize/commit/d85caeaf69bea974e220cdef12cb3ce7a72f1ea9))
+
 ## [1.0.3](https://github.com/Izhaki/useSize/compare/v1.0.2...v1.0.3) (2021-07-18)
 
 
