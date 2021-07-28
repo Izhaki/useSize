@@ -1,6 +1,7 @@
 import * as React from 'react';
 import sizeOnce from './detectors/sizeOnce';
 import type { Size, SizeDetector, Unobserve } from './types';
+import useDeepState from './utils/useDeepState';
 
 export interface Props {
   defaultSize?: Size;
@@ -16,7 +17,7 @@ function useSize({
   mounted: boolean;
 } {
   const unobserve = React.useRef<Unobserve | null>(null);
-  const [size, setSize] = React.useState(defaultSize);
+  const [size, setSize] = useDeepState(defaultSize);
 
   const ref = React.useCallback((node) => {
     if (node !== null) {

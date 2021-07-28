@@ -1,5 +1,5 @@
 import type { SizeDetector, CancellableSizeCallback } from '../types';
-import { noRegulator, getNotifySize } from './helpers';
+import { noRegulator } from './helpers';
 
 function createDetector({ regulator = noRegulator } = {}):
   | SizeDetector
@@ -13,16 +13,16 @@ function createDetector({ regulator = noRegulator } = {}):
 
   let regulatedOnSize: CancellableSizeCallback;
 
-  const notifySize = getNotifySize();
-
   const observer = new ResizeObserver((entries) => {
     const element = entries[0].target;
-    notifySize(element, regulatedOnSize);
+    const { width, height } = element.getBoundingClientRect();
+    regulatedOnSize({ width, height });
   });
 
   return (element, onSize) => {
     // Always notify the initial size straight away.
-    notifySize(element, onSize);
+    const { width, height } = element.getBoundingClientRect();
+    onSize({ width, height });
 
     // Set up the detector
     regulatedOnSize = regulator(onSize);

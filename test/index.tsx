@@ -131,7 +131,6 @@ describe('The useSize hook', function () {
       );
     });
 
-
     it('should return the correct size', async function () {
       const { width } = await this.getSize();
       expect(width).to.eq(600);
@@ -145,6 +144,18 @@ describe('The useSize hook', function () {
 
       await window.setViewportSize({ width: 700, height: 700 });
       await sleep(100);
+
+      expect(this.getRenderCount()).to.eq(initialRenderCount);
+    });
+
+    it.only('should not update when the component is resized to the same size and the throttle duration has elapsed', async function () {
+      const initialRenderCount = this.getRenderCount();
+
+      await window.setViewportSize({ width: 800, height: 800 });
+      await sleep(100);
+
+      await window.setViewportSize({ width: 600, height: 600 });
+      await sleep(200);
 
       expect(this.getRenderCount()).to.eq(initialRenderCount);
     });
@@ -172,7 +183,6 @@ describe('The useSize hook', function () {
         />
       );
     });
-
 
     it('should return the correct size', async function () {
       const { width } = await this.getSize();
@@ -231,7 +241,4 @@ describe('The useSize hook', function () {
       expect(width).to.eq(700);
     });
   });
-
-
-
 });
