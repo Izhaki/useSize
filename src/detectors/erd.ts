@@ -1,6 +1,6 @@
 import type { SizeDetector } from '../types';
 import createResizeDetector from 'element-resize-detector';
-import { noRegulator } from './helpers';
+import { noRegulator } from '../regulators';
 
 let detector = null;
 

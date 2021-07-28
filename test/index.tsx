@@ -148,7 +148,7 @@ describe('The useSize hook', function () {
       expect(this.getRenderCount()).to.eq(initialRenderCount);
     });
 
-    it.only('should not update when the component is resized to the same size and the throttle duration has elapsed', async function () {
+    it('should not update when the component is resized to the same size and the throttle duration has elapsed', async function () {
       const initialRenderCount = this.getRenderCount();
 
       await window.setViewportSize({ width: 800, height: 800 });

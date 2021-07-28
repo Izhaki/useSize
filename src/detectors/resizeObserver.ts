@@ -1,5 +1,5 @@
 import type { SizeDetector, CancellableSizeCallback } from '../types';
-import { noRegulator } from './helpers';
+import { noRegulator } from '../regulators';
 
 function createDetector({ regulator = noRegulator } = {}):
   | SizeDetector
