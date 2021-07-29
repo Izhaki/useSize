@@ -13,31 +13,29 @@ function useSize({
 }: Props = {}): {
   ref: (node: Element | null) => void;
   size: Size;
-  mounted: boolean;
 } {
-  const unobserve = React.useRef<Unobserve | null>(null);
   const [size, setSize] = useDeepState(defaultSize);
 
   const ref = React.useCallback((node) => {
+    let unobserve: Unobserve;
     if (node !== null) {
       // Report initial size
       const { width, height } = node.getBoundingClientRect();
       setSize({ width, height });
 
       if (detector) {
-        unobserve.current = detector(node, setSize);
+        unobserve = detector(node, setSize);
       }
     } else {
-      if (unobserve.current) {
-        unobserve.current();
-        unobserve.current = null;
+      if (unobserve) {
+        unobserve();
+        unobserve = null;
       }
       setSize(defaultSize);
     }
   }, []);
 
-  const mounted = unobserve.current !== null;
-  return { ref, size, mounted };
+  return { ref, size };
 }
 
 export default useSize;
