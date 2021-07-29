@@ -35,7 +35,6 @@ const sleep = (ms) =>
     console.log(error);
     process.exitCode = 1;
   } finally {
-    await sleep(2000);
     await browser.close();
   }
 })();

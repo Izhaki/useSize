@@ -19,22 +19,21 @@ export default class MochaConsoleReporter {
       .once(EVENT_RUN_BEGIN, () => {
         console.log('start');
       })
-      .on(EVENT_SUITE_BEGIN, () => {
+      .on(EVENT_SUITE_BEGIN, (suite) => {
+        console.log(`${this.indent()}${suite.title}`);
         this.increaseIndent();
       })
       .on(EVENT_SUITE_END, () => {
         this.decreaseIndent();
       })
       .on(EVENT_TEST_PASS, (test) => {
-        console.log(`${this.indent()}pass: ${test.fullTitle()}`);
+        console.log(`${this.indent()}✓ ${test.title}`);
       })
       .on(EVENT_TEST_FAIL, (test, err) => {
-        console.log(
-          `${this.indent()}fail: ${test.fullTitle()} - error: ${err.message}`
-        );
+        console.log(`${this.indent()}✗ ${test.title} (${err.message})`);
       })
       .once(EVENT_RUN_END, () => {
-        console.log(`end: ${stats.passes}/${stats.passes + stats.failures} ok`);
+        console.log(`${stats.passes}/${stats.passes + stats.failures} passed`);
       });
   }
 
