@@ -31,7 +31,6 @@ function useSize({
         unobserve();
         unobserve = null;
       }
-      setSize(defaultSize);
     }
   }, []);
 
