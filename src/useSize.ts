@@ -15,21 +15,21 @@ function useSize({
   size: Size;
 } {
   const [size, setSize] = useDeepState(defaultSize);
+  const unobserve = React.useRef<Unobserve | null>(null);
 
   const ref = React.useCallback((node) => {
-    let unobserve: Unobserve;
     if (node !== null) {
       // Report initial size
       const { width, height } = node.getBoundingClientRect();
       setSize({ width, height });
 
       if (detector) {
-        unobserve = detector(node, setSize);
+        unobserve.current = detector(node, setSize);
       }
     } else {
-      if (unobserve) {
-        unobserve();
-        unobserve = null;
+      if (unobserve.current) {
+        unobserve.current();
+        unobserve.current = null;
       }
     }
   }, []);
