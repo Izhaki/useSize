@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Head from 'next/head';
 import Script from 'next/script';
+import MochaConsoleReporter from '../lib/MochaConsoleReporter';
 
 declare global {
   interface Window {
@@ -15,9 +16,11 @@ export default function Tests() {
 
     await import('../../test');
 
-    mocha.run((failures) => {
+    const runner = mocha.run((failures) => {
       window.onTestRunDone(failures);
     });
+
+    new MochaConsoleReporter(runner);
   };
 
   return (
