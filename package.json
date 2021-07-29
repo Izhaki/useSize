@@ -1,6 +1,6 @@
 {
   "name": "@izhaki/use-size",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A react hook to determine elements' size",
   "scripts": {
     "build": "pliz build",

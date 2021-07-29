@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/Izhaki/useSize/compare/v1.0.4...v1.0.5) (2021-07-29)
+
+
+### Bug Fixes
+
+* Residue timeouts cause state update on unmounted component ([572d281](https://github.com/Izhaki/useSize/commit/572d281ff6770102f70f0b5fdd68163dc2ab39b1))
+
 ## [1.0.4](https://github.com/Izhaki/useSize/compare/v1.0.3...v1.0.4) (2021-07-28)
 
 
