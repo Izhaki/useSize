@@ -8,10 +8,6 @@ export default function createDetector({
   let detector;
 
   return (element, onSize) => {
-    // Always notify the initial size straight away.
-    const { width, height } = element.getBoundingClientRect();
-    onSize({ width, height });
-
     // Set up the detector
     const regulatedOnSize = regulator(onSize);
 

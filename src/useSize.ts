@@ -1,5 +1,4 @@
 import * as React from 'react';
-import sizeOnce from './detectors/sizeOnce';
 import type { Size, SizeDetector, Unobserve } from './types';
 import useDeepState from './utils/useDeepState';
 
@@ -10,7 +9,7 @@ export interface Props {
 
 function useSize({
   defaultSize = { width: 0, height: 0 },
-  detector = sizeOnce,
+  detector,
 }: Props = {}): {
   ref: (node: Element | null) => void;
   size: Size;
@@ -21,10 +20,18 @@ function useSize({
 
   const ref = React.useCallback((node) => {
     if (node !== null) {
-      unobserve.current = detector(node, setSize);
+      // Report initial size
+      const { width, height } = node.getBoundingClientRect();
+      setSize({ width, height });
+
+      if (detector) {
+        unobserve.current = detector(node, setSize);
+      }
     } else {
-      unobserve.current();
-      unobserve.current = null;
+      if (unobserve.current) {
+        unobserve.current();
+        unobserve.current = null;
+      }
       setSize(defaultSize);
     }
   }, []);
