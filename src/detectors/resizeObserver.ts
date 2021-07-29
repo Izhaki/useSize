@@ -1,23 +1,16 @@
-import type { SizeDetector, CancellableSizeCallback } from '../types';
+import type { SizeDetector } from '../types';
 import { noRegulator } from '../regulators';
 
-function createDetector({ regulator = noRegulator } = {}):
-  | SizeDetector
-  | undefined {
-  // SSR Guard
-  if (typeof window === 'undefined') return undefined;
+const isClient = typeof window !== 'undefined';
 
-  if (!window.ResizeObserver) {
-    throw new Error('window.ResizeObserver not avail');
+export default function createDetector({
+  regulator = noRegulator,
+} = {}): SizeDetector {
+  if (isClient && !window.ResizeObserver) {
+    throw new Error('window.ResizeObserver is not available');
   }
 
-  let regulatedOnSize: CancellableSizeCallback;
-
-  const observer = new ResizeObserver((entries) => {
-    const element = entries[0].target;
-    const { width, height } = element.getBoundingClientRect();
-    regulatedOnSize({ width, height });
-  });
+  let observer;
 
   return (element, onSize) => {
     // Always notify the initial size straight away.
@@ -25,7 +18,16 @@ function createDetector({ regulator = noRegulator } = {}):
     onSize({ width, height });
 
     // Set up the detector
-    regulatedOnSize = regulator(onSize);
+    const regulatedOnSize = regulator(onSize);
+
+    if (!observer) {
+      observer = new ResizeObserver((entries) => {
+        const resizedElement = entries[0].target;
+        const { width, height } = resizedElement.getBoundingClientRect();
+        regulatedOnSize({ width, height });
+      });
+    }
+
     observer.observe(element);
 
     return () => {
@@ -34,5 +36,3 @@ function createDetector({ regulator = noRegulator } = {}):
     };
   };
 }
-
-export default createDetector;

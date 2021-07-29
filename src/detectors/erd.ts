@@ -2,17 +2,10 @@ import type { SizeDetector } from '../types';
 import createResizeDetector from 'element-resize-detector';
 import { noRegulator } from '../regulators';
 
-let detector = null;
-
-function createDetector({ regulator = noRegulator } = {}):
-  | SizeDetector
-  | undefined {
-  // SSR Guard
-  if (typeof window === 'undefined') return undefined;
-
-  const resizeDetector = createResizeDetector({
-    strategy: 'scroll',
-  });
+export default function createDetector({
+  regulator = noRegulator,
+} = {}): SizeDetector {
+  let detector;
 
   return (element, onSize) => {
     // Always notify the initial size straight away.
@@ -21,18 +14,21 @@ function createDetector({ regulator = noRegulator } = {}):
 
     // Set up the detector
     const regulatedOnSize = regulator(onSize);
-    resizeDetector.listenTo(element, () => {
+
+    if (!detector) {
+      detector = createResizeDetector({
+        strategy: 'scroll',
+      });
+    }
+
+    detector.listenTo(element, () => {
       const { width, height } = element.getBoundingClientRect();
       regulatedOnSize({ width, height });
     });
 
     return () => {
       regulatedOnSize.cancel();
-      resizeDetector.uninstall(element);
+      detector.uninstall(element);
     };
   };
 }
-
-const getDetector = (options = {}) => detector || createDetector(options);
-
-export default getDetector;
