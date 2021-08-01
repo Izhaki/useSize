@@ -1,5 +1,6 @@
-import type { SizeDetector } from '../types';
 import createResizeDetector from 'element-resize-detector';
+import type { SizeDetector } from '../types';
+import getElementSize from '../utils/getElementSize';
 import { noRegulator } from '../regulators';
 
 export default function createDetector({
@@ -18,8 +19,8 @@ export default function createDetector({
     }
 
     detector.listenTo(element, () => {
-      const { width, height } = element.getBoundingClientRect();
-      regulatedOnSize({ width, height });
+      const size = getElementSize(element);
+      regulatedOnSize(size);
     });
 
     return () => {

@@ -1,5 +1,6 @@
 import type { SizeDetector } from '../types';
 import { noRegulator } from '../regulators';
+import getElementSize from '../utils/getElementSize';
 
 const isClient = typeof window !== 'undefined';
 
@@ -18,8 +19,8 @@ export default function createDetector({
     if (!observer) {
       observer = new ResizeObserver((entries) => {
         const resizedElement = entries[0].target;
-        const { width, height } = resizedElement.getBoundingClientRect();
-        regulatedOnSize({ width, height });
+        const size = getElementSize(resizedElement);
+        regulatedOnSize(size);
       });
     }
 
