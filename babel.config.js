@@ -26,7 +26,6 @@ module.exports = function getBabelConfig(api) {
     [
       '@babel/plugin-transform-runtime',
       {
-        useESModules,
         version: '^7.14.6',
       },
     ],
