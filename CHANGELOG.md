@@ -1,3 +1,10 @@
+## [1.0.6](https://github.com/Izhaki/useSize/compare/v1.0.5...v1.0.6) (2021-08-10)
+
+
+### Bug Fixes
+
+* No subpath exports in dist's package.json ([a682f93](https://github.com/Izhaki/useSize/commit/a682f9344247f5303d0a8fb9f0093d43e52999c1))
+
 ## [1.0.5](https://github.com/Izhaki/useSize/compare/v1.0.4...v1.0.5) (2021-07-29)
 
 
