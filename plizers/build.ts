@@ -56,8 +56,7 @@ async function frankBuild(folderName: string, propPaths: string[]) {
       );
 
       propPaths.forEach((propPath) => {
-        // `./` - exports in package.json must start with `./`
-        set(packageJson, propPath, `./${relative}`);
+        set(packageJson, propPath, relative);
       });
 
       await fs.outputJson(packageJsonPath, packageJson, { spaces: 2 });
@@ -65,11 +64,40 @@ async function frankBuild(folderName: string, propPaths: string[]) {
   );
 }
 
+function createExportKeyReducer(exports, exportPath) {
+  const key = exportPath === '/index' ? '.' : `.${exportPath}`;
+  exports[key] = {
+    require: `./__cjs__${exportPath}.js`,
+    default: `./__modern__${exportPath}.js`,
+  };
+  return exports;
+}
+
+function addExports(distPackageJson) {
+  distPackageJson.exports = [
+    '/index',
+    '/detectors/resizeObserver',
+    '/detectors/erd',
+    '/regulators',
+  ].reduce(createExportKeyReducer, {});
+}
+
+function extractDistPackageJson() {
+  const { scripts, devDependencies, ...distPackageJson } =
+    fs.readJsonSync('package.json');
+  return distPackageJson;
+}
+
+function saveDistPackageJson(distPackageJson) {
+  fs.outputJsonSync(path.join('dist', 'package.json'), distPackageJson, {
+    spaces: 2,
+  });
+}
+
 async function frankDist() {
-  const { scripts, devDependencies, ...keeps } = await fs.readJson(
-    'package.json'
-  );
-  await fs.outputJson(path.join('dist', 'package.json'), keeps, { spaces: 2 });
+  const distPackageJson = extractDistPackageJson();
+  addExports(distPackageJson);
+  saveDistPackageJson(distPackageJson);
 }
 
 const extensions = ['.ts'];
@@ -117,12 +145,12 @@ async function build() {
 
   await buildTarget({
     target: 'cjs',
-    packagePropPaths: ['main', 'exports.require'],
+    packagePropPaths: ['main'],
   });
 
   await buildTarget({
     target: 'modern',
-    packagePropPaths: ['exports.default'],
+    packagePropPaths: [],
   });
 
   await copyToDist('README.md');
