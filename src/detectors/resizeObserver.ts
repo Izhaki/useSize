@@ -2,6 +2,21 @@ import type { SizeDetector } from '../types';
 import { noRegulator } from '../regulators';
 import getElementSize from '../utils/getElementSize';
 
+function create(onSize) {
+  const detector = new ResizeObserver(() => {
+    onSize();
+  });
+
+  return {
+    observe(element) {
+      detector.observe(element);
+    },
+    unobserve(element) {
+      detector.unobserve(element);
+    },
+  };
+}
+
 const isClient = typeof window !== 'undefined';
 
 export default function createDetector({
@@ -11,24 +26,25 @@ export default function createDetector({
     throw new Error('window.ResizeObserver is not available');
   }
 
-  let observer;
+  let detector;
 
   return (element, onSize) => {
     const regulatedOnSize = regulator(onSize);
 
-    if (!observer) {
-      observer = new ResizeObserver((entries) => {
-        const resizedElement = entries[0].target;
-        const size = getElementSize(resizedElement);
-        regulatedOnSize(size);
-      });
+    function handleResize() {
+      const size = getElementSize(element);
+      regulatedOnSize(size);
     }
 
-    observer.observe(element);
+    if (!detector) {
+      detector = create(handleResize);
+    }
+
+    detector.observe(element);
 
     return () => {
       regulatedOnSize.cancel();
-      observer.unobserve(element);
+      detector.unobserve(element);
     };
   };
 }

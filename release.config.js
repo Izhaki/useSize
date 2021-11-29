@@ -8,7 +8,8 @@ module.exports = {
     [
       '@semantic-release/exec',
       {
-        prepareCmd: 'npx rjp package.json version ${nextRelease.version}',
+        prepareCmd:
+          'npx replace-json-property package.json version ${nextRelease.version}',
       },
     ],
     '@semantic-release/changelog',

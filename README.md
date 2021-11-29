@@ -1,6 +1,9 @@
 # useSize
 
 <p align="center">
+  <a aria-label="Build" href="https://github.com/Izhaki/useSize/actions/workflows/release.yml">
+    <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/Izhaki/useSize/Release?style=flat-square">
+  </a>
   <a aria-label="NPM version" href="https://www.npmjs.com/package/@izhaki/use-size">
     <img alt="" src="https://img.shields.io/npm/v/@izhaki/use-size?style=flat-square">
   </a>

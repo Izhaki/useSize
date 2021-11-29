@@ -3,29 +3,43 @@ import type { SizeDetector } from '../types';
 import getElementSize from '../utils/getElementSize';
 import { noRegulator } from '../regulators';
 
+function create(onSize) {
+  const detector = createResizeDetector({
+    strategy: 'scroll',
+  });
+
+  return {
+    observe(element) {
+      detector.listenTo(element, onSize);
+    },
+    unobserve(element) {
+      detector.uninstall(element);
+    },
+  };
+}
+
 export default function createDetector({
   regulator = noRegulator,
 } = {}): SizeDetector {
   let detector;
 
   return (element, onSize) => {
-    // Set up the detector
     const regulatedOnSize = regulator(onSize);
 
-    if (!detector) {
-      detector = createResizeDetector({
-        strategy: 'scroll',
-      });
-    }
-
-    detector.listenTo(element, () => {
+    function handleResize() {
       const size = getElementSize(element);
       regulatedOnSize(size);
-    });
+    }
+
+    if (!detector) {
+      detector = create(handleResize);
+    }
+
+    detector.observe(element);
 
     return () => {
       regulatedOnSize.cancel();
-      detector.uninstall(element);
+      detector.unobserve(element);
     };
   };
 }
